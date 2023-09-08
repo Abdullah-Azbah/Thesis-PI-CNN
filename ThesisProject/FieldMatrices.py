@@ -27,14 +27,13 @@ class FieldMatrices:
         fig, ax = plt.subplots(1, 1)
         ax.set(aspect='equal')
 
-        cont = ax.contourf(matrix)
+        cont = ax.imshow(matrix, interpolation=None,  origin='lower')
         ax.set_title(f'Field: {title}')
         fig.colorbar(cont)
         fig.show()
 
     def plot_field_matrix(self, field):
         matrix = getattr(self, field)
-        print(matrix.shape)
         self.plot_matrix(matrix, field)
 
     def plot_field_matrices(self, resolution=None):
