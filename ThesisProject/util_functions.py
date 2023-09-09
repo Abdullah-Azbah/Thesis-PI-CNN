@@ -29,7 +29,7 @@ def grad2d(tensor, axis, dx=1.0):
         d_center = (tensor[:, 2:, :, :] - tensor[:, :-2, :, :]) / (2.0 * dx)
         d_edge1 = (-1.5 * tensor[:, 0, :, :] + 2.0 * tensor[:, 1, :, :] - 0.5 * tensor[:, 2, :, :]) / dx
         d_edge2 = (1.5 * tensor[:, -1, :, :] - 2.0 * tensor[:, -2, :, :] + 0.5 * tensor[:, -3, :, :]) / dx
-        d = tf.concat([[d_edge1], d_center, [d_edge2]], axis=1)
+        d = tf.concat([d_edge1[:, tf.newaxis, :, :], d_center, d_edge2[:, tf.newaxis, :, :]], axis=1)
     elif axis == 2:
         d_center = (tensor[:, :, 2:, :] - tensor[:, :, :-2, :]) / (2.0 * dx)
         d_edge1 = (-1.5 * tensor[:, :, 0, :] + 2.0 * tensor[:, :, 1, :] - 0.5 * tensor[:, :, 2, :]) / dx
