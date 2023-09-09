@@ -77,6 +77,6 @@ class ModelV1(Model):
         fig.show()
 
     @staticmethod
-    def save(model):
-        output_path = os.path.join('output', 'ModelV1')
+    def save(model, suffix=''):
+        output_path = os.path.join('output', 'ModelV1' + suffix)
         model.save(output_path)
