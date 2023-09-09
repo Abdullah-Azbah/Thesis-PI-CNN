@@ -54,7 +54,7 @@ class ModelV1(Model):
         # model = tf.keras.layers.Activation('relu')(model)
 
         model = tf.keras.Model(inputs, model)
-        return model
+        return inputs, model
 
     @staticmethod
     def test_model(model, case):
