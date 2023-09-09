@@ -37,45 +37,37 @@ def raw_physics_loss(input_tensor, output_tensor, dx=1, elasticity_layer_index=2
     return res1, res2
 
 
-def mse_physics_loss(input_tensor, dx=1, elasticity_layer_index=2):
-    def loss(output_true, output_predict):
-        res1, res2 = raw_physics_loss(
-            input_tensor,
-            output_predict,
-            dx=dx,
-            elasticity_layer_index=elasticity_layer_index
-        )
+def mse_physics_loss(input_tensor, output_predict, dx=1, elasticity_layer_index=2):
+    res1, res2 = raw_physics_loss(
+        input_tensor,
+        output_predict,
+        dx=dx,
+        elasticity_layer_index=elasticity_layer_index
+    )
 
-        res1 = tf.reduce_mean(res1 ** 2)
-        res2 = tf.reduce_mean(res2 ** 2)
-        return res1 + res2
-
-    return loss
+    res1 = tf.reduce_mean(res1 ** 2)
+    res2 = tf.reduce_mean(res2 ** 2)
+    return res1 + res2
 
 
-def rmse_physics_loss(input_tensor, dx=1, elasticity_layer_index=2):
-    def loss(output_true, output_predict):
-        r = mse_physics_loss(
-            input_tensor,
-            dx=dx,
-            elasticity_layer_index=elasticity_layer_index
-        )(output_true, output_predict)
-        return tf.sqrt(r)
+def rmse_physics_loss(input_tensor, output_predict, dx=1, elasticity_layer_index=2):
+    r = mse_physics_loss(
+        input_tensor, output_predict,
+        dx=dx,
+        elasticity_layer_index=elasticity_layer_index
+    )
 
-    return loss
+    return r
 
 
-def mae_physics_loss(input_tensor, dx=1, elasticity_layer_index=2):
-    def loss(output_true, output_predict):
-        res1, res2 = raw_physics_loss(
-            input_tensor,
-            output_predict,
-            dx=dx,
-            elasticity_layer_index=elasticity_layer_index
-        )
+def mae_physics_loss(input_tensor, output_predict, dx=1, elasticity_layer_index=2):
+    res1, res2 = raw_physics_loss(
+        input_tensor,
+        output_predict,
+        dx=dx,
+        elasticity_layer_index=elasticity_layer_index
+    )
 
-        res1 = tf.reduce_mean(tf.abs(res1))
-        res2 = tf.reduce_mean(tf.abs(res2))
-        return res1 + res2
-
-    return loss
+    res1 = tf.reduce_mean(tf.abs(res1))
+    res2 = tf.reduce_mean(tf.abs(res2))
+    return res1 + res2

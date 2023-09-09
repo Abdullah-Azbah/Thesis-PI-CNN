@@ -15,46 +15,47 @@ class Model:
 class ModelV1(Model):
     @staticmethod
     def get_model():
-        inputs = tf.keras.layers.Input((None, None, 3))
+        inputs = tf.keras.layers.Input((26, 51, 3))
 
-        model = tf.keras.layers.Conv2D(32, 9, padding='same')(inputs)
-        model = tf.keras.layers.BatchNormalization()(model)
-        model = tf.keras.layers.Activation('relu')(model)
+        outputs = tf.keras.layers.Conv2D(32, 9, padding='same')(inputs)
+        outputs = tf.keras.layers.BatchNormalization()(outputs)
+        outputs = tf.keras.layers.Activation('relu')(outputs)
 
-        model = tf.keras.layers.Conv2D(64, 9, padding='same', strides=2)(model)
-        model = tf.keras.layers.BatchNormalization()(model)
-        model = tf.keras.layers.Activation('relu')(model)
+        outputs = tf.keras.layers.Conv2D(64, 9, padding='same', strides=2)(outputs)
+        outputs = tf.keras.layers.BatchNormalization()(outputs)
+        outputs = tf.keras.layers.Activation('relu')(outputs)
 
-        model = tf.keras.layers.Conv2D(128, 9, padding='same', strides=2)(model)
-        model = tf.keras.layers.BatchNormalization()(model)
-        model = tf.keras.layers.Activation('relu')(model)
+        outputs = tf.keras.layers.Conv2D(128, 9, padding='same', strides=2)(outputs)
+        outputs = tf.keras.layers.BatchNormalization()(outputs)
+        outputs = tf.keras.layers.Activation('relu')(outputs)
 
-        model = res_block(model, 128)
-        model = res_block(model, 128)
-        model = res_block(model, 128)
-        model = res_block(model, 128)
-        model = res_block(model, 128)
+        outputs = res_block(outputs, 128)
+        outputs = res_block(outputs, 128)
+        outputs = res_block(outputs, 128)
+        outputs = res_block(outputs, 128)
+        outputs = res_block(outputs, 128)
 
-        model = res_block(model, 128)
-        model = res_block(model, 128)
-        model = res_block(model, 128)
-        model = res_block(model, 128)
-        model = res_block(model, 128)
+        outputs = res_block(outputs, 128)
+        outputs = res_block(outputs, 128)
+        outputs = res_block(outputs, 128)
+        outputs = res_block(outputs, 128)
+        outputs = res_block(outputs, 128)
 
-        model = tf.keras.layers.Conv2DTranspose(64, 3, padding='same', strides=2)(model)
-        model = tf.keras.layers.Activation('relu')(model)
-        model = tf.keras.layers.BatchNormalization()(model)
+        outputs = tf.keras.layers.Conv2DTranspose(64, 3, padding='same', strides=2)(outputs)
+        outputs = tf.keras.layers.Activation('relu')(outputs)
+        outputs = tf.keras.layers.BatchNormalization()(outputs)
 
-        model = tf.keras.layers.Conv2DTranspose(32, 3, padding='same', strides=2)(model)
-        model = tf.keras.layers.Activation('relu')(model)
-        model = tf.keras.layers.BatchNormalization()(model)
+        outputs = tf.keras.layers.Conv2DTranspose(32, 3, padding='same', strides=2)(outputs)
+        outputs = tf.keras.layers.Activation('relu')(outputs)
+        outputs = tf.keras.layers.BatchNormalization()(outputs)
 
-        model = tf.keras.layers.Conv2D(2, 9, padding='same')(model)
-        model = tf.keras.layers.Cropping2D(((1, 1), (1, 0)))(model)
+        outputs = tf.keras.layers.Conv2D(2, 9, padding='same')(outputs)
+        outputs = tf.keras.layers.Cropping2D(((1, 1), (1, 0)))(outputs)
         # model = tf.keras.layers.Activation('relu')(model)
 
-        model = tf.keras.Model(inputs, model)
-        return inputs, model
+        model = tf.keras.Model(inputs, outputs)
+
+        return inputs, outputs, model
 
     @staticmethod
     def test_model(model, case):
