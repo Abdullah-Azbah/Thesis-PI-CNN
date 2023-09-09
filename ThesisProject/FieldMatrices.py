@@ -80,6 +80,7 @@ class FieldMatrices:
 
     def get_output_matrix(self):
         return np.stack([
+            self.displacement_x,
             self.displacement_y
         ], -1)
 
