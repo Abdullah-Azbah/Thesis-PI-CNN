@@ -26,3 +26,11 @@ def res_block(inputs, filters):
     x = tf.keras.layers.Add()([inputs, x])
 
     return x
+
+
+def upsampling(inputs, factor=2, **kwargs):
+    x = tf.keras.layers.Conv2D(64 * (factor ** 2), 3, padding="same", **kwargs)(inputs)
+    x = tf.nn.depth_to_space(x, block_size=factor)
+    x = tf.keras.layers.Conv2D(64 * (factor ** 2), 3, padding="same", **kwargs)(x)
+    x = tf.nn.depth_to_space(x, block_size=factor)
+    return x
