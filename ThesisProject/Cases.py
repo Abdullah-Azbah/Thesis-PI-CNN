@@ -55,7 +55,7 @@ class CaseV1(Case):
         ax.set_title('Case Input')
         fig.show()
 
-    def plot_result_component(self, component='nodal_strain_xx'):
+    def plot_result_component(self, component='nodal_displacement_y'):
         fig, ax = plt.subplots(1, 1)
         ax.set(aspect='equal')
 
@@ -160,18 +160,12 @@ class CaseV1(Case):
 
         node_coords = self.results.nodes_location[:, 0:2]
 
-        strain_xx_interpolator = LinearNDInterpolator(node_coords, self.results.nodal_strain_xx)
-        strain_field_xx = strain_xx_interpolator(points).reshape(matrix_shape)
+        displacement_x_interpolator = LinearNDInterpolator(node_coords, self.results.nodal_displacement_x)
+        displacement_field_x= displacement_x_interpolator(points).reshape(matrix_shape)
 
-        strain_yy_interpolator = LinearNDInterpolator(node_coords, self.results.nodal_strain_yy)
-        strain_field_yy = strain_yy_interpolator(points).reshape(matrix_shape)
+        displacement_y_interpolator = LinearNDInterpolator(node_coords, self.results.nodal_displacement_y)
+        displacement_field_y = displacement_y_interpolator(points).reshape(matrix_shape)
 
-        strain_xy_interpolator = LinearNDInterpolator(node_coords, self.results.nodal_strain_xy)
-        strain_field_xy = strain_xy_interpolator(points).reshape(matrix_shape)
-
-        # plt.imshow(displacement_y_matrix)
-        # plt.colorbar()
-        # plt.show()
         return FieldMatrices(
             self.width,
             self.height,
@@ -184,9 +178,8 @@ class CaseV1(Case):
 
             elasticity,
 
-            strain_field_xx,
-            strain_field_yy,
-            strain_field_xy
+            displacement_field_x,
+            displacement_field_y
         )
 
     def analyze(self, apdl_instance):
@@ -251,16 +244,14 @@ class CaseV1(Case):
         apdl_instance.post1()
         apdl_instance.set('last')
 
-        nodal_stain_xx = apdl_instance.post_processing.nodal_elastic_component_strain('X')
-        nodal_stain_yy = apdl_instance.post_processing.nodal_elastic_component_strain('Y')
-        nodal_stain_xy = apdl_instance.post_processing.nodal_elastic_component_strain('XY')
+        nodal_displacement_x = apdl_instance.post_processing.nodal_displacement('X')
+        nodal_displacement_y = apdl_instance.post_processing.nodal_displacement('Y')
 
         self.results = Results(
             nnum,
             nloc,
-            nodal_stain_xx,
-            nodal_stain_yy,
-            nodal_stain_xy
+            nodal_displacement_x,
+            nodal_displacement_y
         )
 
     @classmethod

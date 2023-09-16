@@ -6,7 +6,6 @@ from dataclasses import dataclass
 class Results:
     nodes_number: np.ndarray
     nodes_location: np.ndarray
-    nodal_strain_xx: np.ndarray
-    nodal_strain_yy: np.ndarray
-    nodal_strain_xy: np.ndarray
+    nodal_displacement_x: np.ndarray
+    nodal_displacement_y: np.ndarray
 

@@ -49,7 +49,7 @@ class ModelV1(Model):
         outputs = tf.keras.layers.Activation('relu')(outputs)
         outputs = tf.keras.layers.BatchNormalization()(outputs)
 
-        outputs = tf.keras.layers.Conv2D(3, 9, padding='same')(outputs)
+        outputs = tf.keras.layers.Conv2D(2, 9, padding='same')(outputs)
         outputs = tf.keras.layers.Cropping2D(((1, 1), (1, 0)))(outputs)
         # model = tf.keras.layers.Activation('relu')(model)
 
