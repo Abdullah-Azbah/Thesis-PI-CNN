@@ -1,7 +1,6 @@
 import os
-import pickle
 import random
-import tensorflow as tf
+import sys
 
 
 def get_random_token(n=6):
@@ -25,6 +24,9 @@ def round_nearest(x, base):
 
 
 def grad2d(tensor, axis, dx=1.0):
+    if 'tf' not in sys.modules:
+        import tensorflow as tf
+
     if axis == 1:
         d_center = (tensor[:, 2:, :, :] - tensor[:, :-2, :, :]) / (2.0 * dx)
         d_edge1 = (-1.5 * tensor[:, 0, :, :] + 2.0 * tensor[:, 1, :, :] - 0.5 * tensor[:, 2, :, :]) / dx
