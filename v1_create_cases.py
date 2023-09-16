@@ -1,21 +1,18 @@
 import os
 import queue
-import random
 import os.path
 import threading
-import numpy
 
 from ansys.mapdl.core import launch_mapdl
 from ThesisProject.Cases import CaseV1
-from ThesisProject.util_functions import get_random_token
 
 
 N_START = 0
-N = 1
-N_THREADS = 1
+N = 10_000
+N_THREADS = 32
 N_PROCS = 1
 RESOLUTION = 10
-CASE_OUTPUT_DIR = 'output/'
+CASE_OUTPUT_DIR = 'output/cases_v1'
 if not os.path.exists(CASE_OUTPUT_DIR):
     os.makedirs(CASE_OUTPUT_DIR)
 
@@ -25,7 +22,8 @@ def test():
     file = files[0]
 
     case = CaseV1.from_file(os.path.join(CASE_OUTPUT_DIR, file))
-    case.plot_field_matrices()
+    fields = case.create_matrices(10)
+    fields.plot_field_matrices()
 
 
 def worker(q):
