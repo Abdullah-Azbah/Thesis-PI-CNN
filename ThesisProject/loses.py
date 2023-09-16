@@ -61,7 +61,7 @@ def rmse_physics_loss(input_tensor, output_predict, dx=1, elasticity_layer_index
         elasticity_layer_index=elasticity_layer_index,
     )
 
-    return rate * r
+    return rate * r ** 0.5
 
 
 def mae_physics_loss(input_tensor, output_predict, dx=1, elasticity_layer_index=2, rate=1):
