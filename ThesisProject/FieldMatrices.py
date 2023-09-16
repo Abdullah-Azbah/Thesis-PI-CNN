@@ -10,18 +10,15 @@ class FieldMatrices:
     height: float
     resolution: float
 
-    coord_x: np.ndarray
-    coord_y: np.ndarray
-
     applied_displacement_x: np.ndarray
     applied_displacement_y: np.ndarray
     applied_force_x: np.ndarray
     applied_force_y: np.ndarray
     elasticity: np.ndarray
 
-    displacement_x: np.ndarray
-    displacement_y: np.ndarray
-    stress_intensity: np.ndarray
+    strain_xx: np.ndarray
+    strain_yy: np.ndarray
+    strain_xy: np.ndarray
 
     def plot_matrix(self, matrix, title):
         fig, ax = plt.subplots(1, 1)
@@ -55,9 +52,9 @@ class FieldMatrices:
         plots.append(axs[0, 3].contourf(self.applied_displacement_y))
 
         plots.append(axs[1, 0].contourf(self.elasticity))
-        plots.append(axs[1, 1].contourf(self.displacement_x))
-        plots.append(axs[1, 2].contourf(self.displacement_y))
-        plots.append(axs[1, 3].contourf(self.stress_intensity))
+        plots.append(axs[1, 1].contourf(self.strain_xx))
+        plots.append(axs[1, 2].contourf(self.strain_yy))
+        plots.append(axs[1, 3].contourf(self.strain_xy))
 
         for i, ax in enumerate(axs.reshape(-1)):
             ax.set(
@@ -80,8 +77,9 @@ class FieldMatrices:
 
     def get_output_matrix(self):
         return np.stack([
-            self.displacement_x,
-            self.displacement_y
+            self.strain_xx,
+            self.strain_yy,
+            self.strain_xy
         ], -1)
 
     def save(self, save_path):

@@ -15,7 +15,7 @@ class Model:
 class ModelV1(Model):
     @staticmethod
     def get_model():
-        inputs = tf.keras.layers.Input((26, 51, 3))
+        inputs = tf.keras.layers.Input((None, None, 3))
 
         outputs = tf.keras.layers.Conv2D(32, 9, padding='same')(inputs)
         outputs = tf.keras.layers.BatchNormalization()(outputs)
@@ -49,7 +49,7 @@ class ModelV1(Model):
         outputs = tf.keras.layers.Activation('relu')(outputs)
         outputs = tf.keras.layers.BatchNormalization()(outputs)
 
-        outputs = tf.keras.layers.Conv2D(2, 9, padding='same')(outputs)
+        outputs = tf.keras.layers.Conv2D(3, 9, padding='same')(outputs)
         outputs = tf.keras.layers.Cropping2D(((1, 1), (1, 0)))(outputs)
         # model = tf.keras.layers.Activation('relu')(model)
 

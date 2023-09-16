@@ -126,7 +126,6 @@ class CaseV1(Case):
 
         matrix_shape = (matrix_rows, matrix_cols)
 
-        coord_x, coord_y = np.meshgrid(y_field, x_field)
 
         left_support_start = self.left_support_start // resolution
         left_support_end = (self.left_support_start + self.left_support_length) // resolution
@@ -162,14 +161,14 @@ class CaseV1(Case):
 
         node_coords = self.results.nodes_location[:, 0:2]
 
-        displacement_x_interpolator = LinearNDInterpolator(node_coords, self.results.nodal_displacement_x)
-        displacement_field_x = displacement_x_interpolator(points).reshape(matrix_shape)
+        strain_xx_interpolator = LinearNDInterpolator(node_coords, self.results.nodal_strain_xx)
+        strain_field_xx = strain_xx_interpolator(points).reshape(matrix_shape)
 
-        displacement_y_interpolator = LinearNDInterpolator(node_coords, self.results.nodal_displacement_y)
-        displacement_field_y = displacement_y_interpolator(points).reshape(matrix_shape)
+        strain_yy_interpolator = LinearNDInterpolator(node_coords, self.results.nodal_strain_yy)
+        strain_field_yy = strain_yy_interpolator(points).reshape(matrix_shape)
 
-        stress_intensity_interpolator = LinearNDInterpolator(node_coords, self.results.stress_intensity)
-        stress_intensity_field = stress_intensity_interpolator(points).reshape(matrix_shape)
+        strain_xy_interpolator = LinearNDInterpolator(node_coords, self.results.nodal_strain_xy)
+        strain_field_xy = strain_xy_interpolator(points).reshape(matrix_shape)
 
         # plt.imshow(displacement_y_matrix)
         # plt.colorbar()
@@ -179,9 +178,6 @@ class CaseV1(Case):
             self.height,
             resolution,
 
-            coord_x,
-            coord_y,
-
             applied_displacement_x,
             applied_displacement_y,
             applied_force_x,
@@ -189,9 +185,9 @@ class CaseV1(Case):
 
             elasticity,
 
-            displacement_field_x,
-            displacement_field_y,
-            stress_intensity_field
+            strain_field_xx,
+            strain_field_yy,
+            strain_field_xy
         )
 
     def analyze(self, apdl_instance):
@@ -256,16 +252,16 @@ class CaseV1(Case):
         apdl_instance.post1()
         apdl_instance.set('last')
 
-        stress_intensity = apdl_instance.post_processing.nodal_stress_intensity()
-        nodal_displacement_x = apdl_instance.post_processing.nodal_displacement('X')
-        nodal_displacement_y = apdl_instance.post_processing.nodal_displacement('Y')
+        nodal_stain_xx = apdl_instance.post_processing.nodal_elastic_component_strain('X')
+        nodal_stain_yy = apdl_instance.post_processing.nodal_elastic_component_strain('Y')
+        nodal_stain_xy = apdl_instance.post_processing.nodal_elastic_component_strain('XY')
 
         self.results = Results(
             nnum,
             nloc,
-            stress_intensity,
-            nodal_displacement_x,
-            nodal_displacement_y
+            nodal_stain_xx,
+            nodal_stain_yy,
+            nodal_stain_xy
         )
 
     @classmethod
