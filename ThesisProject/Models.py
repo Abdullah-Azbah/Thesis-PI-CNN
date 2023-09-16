@@ -79,5 +79,5 @@ class ModelV1(Model):
 
     @staticmethod
     def save(model, suffix=''):
-        output_path = os.path.join('output', 'ModelV1' + suffix)
+        output_path = os.path.join('output', 'ModelV1' + '_' + suffix)
         model.save(output_path)
