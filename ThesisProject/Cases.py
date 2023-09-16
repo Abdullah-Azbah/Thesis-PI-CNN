@@ -55,7 +55,7 @@ class CaseV1(Case):
         ax.set_title('Case Input')
         fig.show()
 
-    def plot_result_component(self, component='nodal_displacement_x'):
+    def plot_result_component(self, component='nodal_strain_xx'):
         fig, ax = plt.subplots(1, 1)
         ax.set(aspect='equal')
 
