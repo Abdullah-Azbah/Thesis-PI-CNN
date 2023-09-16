@@ -4,19 +4,23 @@ from ThesisProject.util_functions import grad2d
 
 
 def raw_physics_loss(input_tensor, output_tensor, dx=1, elasticity_layer_index=2):
+    e_xx = output_tensor[..., 0]
+    e_yy = output_tensor[..., 1]
+    e_xy = output_tensor[..., 2]
+
     modulus_of_elasticity = input_tensor[..., elasticity_layer_index]
 
-    d_dx = grad2d(output_tensor, axis=2, dx=dx)
-    d_dy = grad2d(output_tensor, axis=1, dx=dx)
-
-    du_dx = d_dx[..., 0]
-    dv_dx = d_dx[..., 1]
-    du_dy = d_dy[..., 0]
-    dv_dy = d_dy[..., 1]
-
-    e_xx = du_dx
-    e_yy = dv_dy
-    e_xy = 0.5 * (du_dy + dv_dx)
+    # d_dx = grad2d(output_tensor, axis=2, dx=dx)
+    # d_dy = grad2d(output_tensor, axis=1, dx=dx)
+    #
+    # du_dx = d_dx[..., 0]
+    # dv_dx = d_dx[..., 1]
+    # du_dy = d_dy[..., 0]
+    # dv_dy = d_dy[..., 1]
+    #
+    # e_xx = du_dx
+    # e_yy = dv_dy
+    # e_xy = 0.5 * (du_dy + dv_dx)
 
     stress_xx = modulus_of_elasticity * (e_xx + 0.3 * e_yy)
     stress_yy = modulus_of_elasticity * (e_yy + 0.3 * e_xx)
