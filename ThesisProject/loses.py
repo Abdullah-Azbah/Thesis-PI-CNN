@@ -37,7 +37,7 @@ def raw_physics_loss(input_tensor, output_tensor, dx=1, elasticity_layer_index=2
     return res1, res2
 
 
-def mse_physics_loss(input_tensor, output_predict, dx=1, elasticity_layer_index=2):
+def mse_physics_loss(input_tensor, output_predict, dx=1, elasticity_layer_index=2, rate=1):
     res1, res2 = raw_physics_loss(
         input_tensor,
         output_predict,
@@ -47,20 +47,20 @@ def mse_physics_loss(input_tensor, output_predict, dx=1, elasticity_layer_index=
 
     res1 = tf.reduce_mean(res1 ** 2)
     res2 = tf.reduce_mean(res2 ** 2)
-    return res1 + res2
+    return rate * (res1 + res2)
 
 
-def rmse_physics_loss(input_tensor, output_predict, dx=1, elasticity_layer_index=2):
+def rmse_physics_loss(input_tensor, output_predict, dx=1, elasticity_layer_index=2, rate=1):
     r = mse_physics_loss(
         input_tensor, output_predict,
         dx=dx,
-        elasticity_layer_index=elasticity_layer_index
+        elasticity_layer_index=elasticity_layer_index,
     )
 
-    return r
+    return rate * r
 
 
-def mae_physics_loss(input_tensor, output_predict, dx=1, elasticity_layer_index=2):
+def mae_physics_loss(input_tensor, output_predict, dx=1, elasticity_layer_index=2, rate=1):
     res1, res2 = raw_physics_loss(
         input_tensor,
         output_predict,
@@ -70,4 +70,4 @@ def mae_physics_loss(input_tensor, output_predict, dx=1, elasticity_layer_index=
 
     res1 = tf.reduce_mean(tf.abs(res1))
     res2 = tf.reduce_mean(tf.abs(res2))
-    return res1 + res2
+    return rate * (res1 + res2)
