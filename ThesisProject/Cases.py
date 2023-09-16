@@ -126,7 +126,6 @@ class CaseV1(Case):
 
         matrix_shape = (matrix_rows, matrix_cols)
 
-
         left_support_start = self.left_support_start // resolution
         left_support_end = (self.left_support_start + self.left_support_length) // resolution
         right_support_start = self.right_support_start // resolution
