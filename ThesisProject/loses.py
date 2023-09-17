@@ -3,7 +3,7 @@ import tensorflow as tf
 from ThesisProject.util_functions import grad2d
 
 
-def raw_physics_loss(input_tensor, output_tensor, dx=1, elasticity_layer_index=2):
+def physics_raw_loss(input_tensor, output_tensor, dx=1, elasticity_layer_index=2):
     # e_xx = output_tensor[..., 0]
     # e_yy = output_tensor[..., 1]
     # e_xy = output_tensor[..., 2]
@@ -20,11 +20,11 @@ def raw_physics_loss(input_tensor, output_tensor, dx=1, elasticity_layer_index=2
 
     e_xx = du_dx
     e_yy = dv_dy
-    e_xy = 0.5 * (du_dy + dv_dx)
+    e_xy = du_dy + dv_dx
 
     stress_xx = modulus_of_elasticity * (e_xx + 0.3 * e_yy)
     stress_yy = modulus_of_elasticity * (e_yy + 0.3 * e_xx)
-    stress_xy = modulus_of_elasticity * (1 + 0.3) * e_xy
+    stress_xy = 0.5 * modulus_of_elasticity * (1 + 0.3) * e_xy
 
     stress_xx = stress_xx[..., tf.newaxis]
     stress_yy = stress_yy[..., tf.newaxis]
@@ -35,43 +35,76 @@ def raw_physics_loss(input_tensor, output_tensor, dx=1, elasticity_layer_index=2
     d_stress_xy_x = grad2d(stress_xy, axis=2, dx=dx)
     d_stress_yy_y = grad2d(stress_yy, axis=1, dx=dx)
 
-    res1 = d_stress_xx_x + d_stress_xy_y
-    res2 = d_stress_xy_x + d_stress_yy_y
+    d_exx_y = grad2d(e_xx[..., np.newaxis], axis=1, dx=dx)
+    d_eyy_x = grad2d(e_yy[..., np.newaxis], axis=2, dx=dx)
 
-    return res1, res2
+    d2_exx_y = grad2d(d_exx_y, axis=1, dx=dx)
+    d2_eyy_x = grad2d(d_eyy_x, axis=2, dx=dx)
+
+    d_exy_x = grad2d(e_xy[..., np.newaxis], axis=2, dx=dx)
+    d2_exy_xy = grad2d(d_exy_x, axis=1, dx=dx)
+
+    eq_x = d_stress_xx_x + d_stress_xy_y
+    eq_y = d_stress_xy_x + d_stress_yy_y
+    comb = d2_exx_y + d2_eyy_x - d2_exy_xy
+
+    return eq_x, eq_y, comb
 
 
-def mse_physics_loss(input_tensor, output_predict, dx=1, elasticity_layer_index=2, rate=1):
-    res1, res2 = raw_physics_loss(
+def physics_mse_loss(input_tensor, output_predict, dx=1, elasticity_layer_index=2, rate=1):
+    if isinstance(rate, (int, float)):
+        rate = [rate] * 3
+    elif not isinstance(rate, list) or (isinstance(rate, list) and len(rate) != 3):
+        raise ValueError('rate must be float or a list of 3 floats')
+
+    eq_x, eq_y, comb = physics_raw_loss(
         input_tensor,
         output_predict,
         dx=dx,
         elasticity_layer_index=elasticity_layer_index
     )
 
-    res1 = tf.reduce_mean(res1 ** 2)
-    res2 = tf.reduce_mean(res2 ** 2)
-    return rate * (res1 + res2)
+    eq_x = tf.reduce_mean(eq_x ** 2)
+    eq_y = tf.reduce_mean(eq_y ** 2)
+    comb = tf.reduce_mean(comb ** 2)
+
+    return rate[0] * eq_x + rate[1] * eq_y + rate[2] * comb
 
 
-def rmse_physics_loss(input_tensor, output_predict, dx=1, elasticity_layer_index=2, rate=1):
-    r = mse_physics_loss(
+def physics_rmse_loss(input_tensor, output_predict, dx=1, elasticity_layer_index=2, rate=1):
+    if isinstance(rate, (int, float)):
+        rate = [rate] * 3
+    elif not isinstance(rate, list) or (isinstance(rate, list) and len(rate) != 3):
+        raise ValueError('rate must be float or a list of 3 floats')
+
+    eq_x, eq_y, comb = physics_raw_loss(
         input_tensor, output_predict,
         dx=dx,
         elasticity_layer_index=elasticity_layer_index,
     )
 
-    return rate * r ** 0.5
+    eq_x = tf.reduce_mean(eq_x ** 2) ** 0.5
+    eq_y = tf.reduce_mean(eq_y ** 2) ** 0.5
+    comb = tf.reduce_mean(comb ** 2) ** 0.5
+
+    return rate[0] * eq_x + rate[1] * eq_y + rate[2] * comb
 
 
-def mae_physics_loss(input_tensor, output_predict, dx=1, elasticity_layer_index=2, rate=1):
-    res1, res2 = raw_physics_loss(
+def physics_mae_loss(input_tensor, output_predict, dx=1, elasticity_layer_index=2, rate=1):
+    if isinstance(rate, (int, float)):
+        rate = [rate] * 3
+    elif not isinstance(rate, list) or (isinstance(rate, list) and len(rate) != 3):
+        raise ValueError('rate must be float or a list of 3 floats')
+
+    eq_x, eq_y, comb = physics_raw_loss(
         input_tensor,
         output_predict,
         dx=dx,
         elasticity_layer_index=elasticity_layer_index
     )
 
-    res1 = tf.reduce_mean(tf.abs(res1))
-    res2 = tf.reduce_mean(tf.abs(res2))
-    return rate * (res1 + res2)
+    eq_x = tf.reduce_mean(tf.abs(eq_x))
+    eq_y = tf.reduce_mean(tf.abs(eq_y))
+    comb = tf.reduce_mean(tf.abs(comb))
+
+    return rate[0] * eq_x + rate[1] * eq_y + rate[2] * comb
