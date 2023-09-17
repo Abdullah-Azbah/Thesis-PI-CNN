@@ -19,6 +19,8 @@ class FieldMatrices:
     displacement_x: np.ndarray
     displacement_y: np.ndarray
 
+    n_fields = 7
+
     def plot_matrix(self, matrix, title):
         fig, ax = plt.subplots(1, 1)
         ax.set(aspect='equal')
@@ -55,8 +57,9 @@ class FieldMatrices:
         plots.append(axs[1, 1].contourf(self.displacement_x))
         plots.append(axs[1, 2].contourf(self.displacement_y))
 
-        for i, ax in enumerate(axs.reshape(-1)):
-            ax.set(
+        axs = axs.reshape(-1)
+        for i in range(self.n_fields):
+            axs[i].set(
                 xlim=[plot_start_x, plot_end_x],
                 ylim=[plot_start_y, plot_end_y],
                 aspect='equal'
