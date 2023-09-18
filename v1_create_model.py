@@ -6,12 +6,15 @@ import random
 from ThesisProject.Cases import CaseV1
 from ThesisProject.Models import ModelV1
 from ThesisProject.util_functions import create_case_generator_from_directory
+from ThesisProject.loses import physics_mse_loss
 
-CASE_OUTPUT_DIR = 'output/cases_v1_res100'
+N = 10_000
+RESOLUTION = 100
+CASE_OUTPUT_DIR = f'output/cases_v1_res{RESOLUTION}'
 EPOCHS = 5
-STEPS_PER_EPOCH = 2500
 RES_BLOCK_FILTERS = 128
 BATCH_SIZE = 20
+STEPS_PER_EPOCH = N // BATCH_SIZE
 
 
 def generator(directory, epochs=1, batch_size=1, as_numpy_array=False):
@@ -62,11 +65,17 @@ def main():
 
     lr_scheduler = tf.keras.callbacks.LearningRateScheduler(lambda epoch, rate: 0.001 * 0.1 ** epoch)
 
-    model = ModelV1.get_model()
-    model.compile(loss='mse', optimizer='adam')
+    inputs, outputs, model = ModelV1.get_model()
+    model.summary()
+
+    physics_loss = physics_mse_loss(inputs, outputs, dx=RESOLUTION, rate=[0, 0, 10e24])
+    model.add_loss(physics_loss)
+    model.add_metric(physics_loss, 'physics')
+
+    model.compile(loss='mae', optimizer='adam')
     model.fit(data, steps_per_epoch=STEPS_PER_EPOCH, epochs=EPOCHS, callbacks=[lr_scheduler])
 
-    ModelV1.save(model)
+    ModelV1.save(model, suffix='physics_mse')
 
 
 if __name__ == '__main__':

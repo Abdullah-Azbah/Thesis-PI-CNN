@@ -9,16 +9,16 @@ from ThesisProject.Cases import CaseV1
 
 N_START = 0
 N = 10_000
-N_THREADS = 32
+N_THREADS = 14
 N_PROCS = 1
-RESOLUTION = 10
+RESOLUTION = 100
 CASE_OUTPUT_DIR = 'output/cases_v1'
 if not os.path.exists(CASE_OUTPUT_DIR):
     os.makedirs(CASE_OUTPUT_DIR)
 
 
 def test():
-    files = os.listdir((CASE_OUTPUT_DIR))
+    files = os.listdir(CASE_OUTPUT_DIR)
     file = files[0]
 
     case = CaseV1.from_file(os.path.join(CASE_OUTPUT_DIR, file))
@@ -31,8 +31,8 @@ def worker(q):
         override=True,
         nproc=N_PROCS,
         remove_temp_dir_on_exit=True,
-        exec_file='/mnt/c/Program Files/ANSYS Inc/v231/ANSYS/bin/winx64/ANSYS231.exe',
-        ip='172.25.192.1',
+        # exec_file='/mnt/c/Program Files/ANSYS Inc/v231/ANSYS/bin/winx64/ANSYS231.exe',
+        # ip='172.25.192.1',
         start_instance=True
     )
     done_cases = os.listdir(CASE_OUTPUT_DIR)

@@ -29,7 +29,7 @@ def main():
 
     input_matrices = np.stack(input_matrices)
 
-    model = tf.keras.models.load_model('output/ModelV1')
+    model = tf.keras.models.load_model('output/ModelV1_physics_mse', custom_objects={'MeanAbsoluteError': tf.keras.losses.MeanAbsoluteError})
     predict = model.predict(input_matrices)
 
     fig, axs = plt.subplots(2, N)
@@ -45,8 +45,8 @@ def main():
         p = cv2.resize(p, new_size)
         r = cv2.resize(r, new_size)
 
-        p = axs[0, i].imshow(p, origin='lower')
-        r = axs[1, i].imshow(r, origin='lower')
+        p = axs[0, i].imshow(p[..., 0], origin='lower')
+        r = axs[1, i].imshow(r[..., 0], origin='lower')
 
         divider = make_axes_locatable(axs[0, i])
         cax = divider.append_axes("right", size="5%", pad=0.1)
@@ -66,7 +66,7 @@ def main():
     )
     # fig.tight_layout()
     fig.show()
-    fig.savefig('proposal_figure_2.png', dpi=200)
+    # fig.savefig('proposal_figure_2.png', dpi=200)
 
 
 if __name__ == '__main__':
